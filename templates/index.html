@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Analytics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Student Performance Analytics Dashboard</h1>
+            <p class="subtitle">Comprehensive analysis and ML-powered predictions</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'dashboard')">Dashboard</button>
+            <button class="tab-button" onclick="openTab(event, 'analytics')">Analytics</button>
+            <button class="tab-button" onclick="openTab(event, 'predictions')">ML Predictions</button>
+            <button class="tab-button" onclick="openTab(event, 'reports')">Reports</button>
+            <button class="tab-button" onclick="openTab(event, 'upload')">Upload Data</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Students</h3>
+                    <p class="stat-value" id="totalStudents">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Grade</h3>
+                    <p class="stat-value" id="avgGrade">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pass Rate</h3>
+                    <p class="stat-value" id="passRate">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>At Risk Students</h3>
+                    <p class="stat-value" id="atRisk">-</p>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3>Grade Distribution</h3>
+                    <canvas id="gradeDistChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Performance Categories</h3>
+                    <canvas id="perfCategoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container-wide">
+                <h3>Subject-wise Average Performance</h3>
+                <canvas id="subjectAvgChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <h2>Detailed Analytics</h2>
+            
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3>Attendance vs Performance</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Study Hours Impact</h3>
+                    <canvas id="studyHoursChart"></canvas>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>Top 10 Performers</h3>
+                <table id="topPerformersTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Average Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="subject-analysis">
+                <h3>Subject-wise Distribution</h3>
+                <div id="subjectDistributions"></div>
+            </div>
+        </div>
+
+        <!-- ML Predictions Tab -->
+        <div id="predictions" class="tab-content">
+            <h2>Machine Learning Predictions</h2>
+            
+            <div class="prediction-controls">
+                <button class="btn btn-primary" onclick="runPredictions()">Run Predictions</button>
+                <div id="modelAccuracy" class="model-stats"></div>
+            </div>
+
+            <div class="table-container">
+                <h3>Student Performance Predictions</h3>
+                <div class="filter-controls">
+                    <label>Filter by Risk Level:</label>
+                    <select id="riskFilter" onchange="filterPredictions()">
+                        <option value="all">All Students</option>
+                        <option value="High">High Risk</option>
+                        <option value="Medium">Medium Risk</option>
+                        <option value="Low">Low Risk</option>
+                    </select>
+                </div>
+                <table id="predictionsTable">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Current Grade</th>
+                            <th>Predicted Grade</th>
+                            <th>Pass Probability</th>
+                            <th>Risk Level</th>
+                            <th>Improvement Needed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <h2>Generate Reports</h2>
+            
+            <div class="report-options">
+                <div class="report-card">
+                    <h3>📊 Excel Report</h3>
+                    <p>Comprehensive analytics with multiple sheets, charts, and detailed statistics</p>
+                    <button class="btn btn-success" onclick="exportExcel()">Download Excel Report</button>
+                </div>
+                
+                <div class="report-card">
+                    <h3>📄 PDF Report</h3>
+                    <p>Professional PDF report with visualizations and executive summary</p>
+                    <button class="btn btn-success" onclick="exportPDF()">Download PDF Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Data Tab -->
+        <div id="upload" class="tab-content">
+            <h2>Upload Student Data</h2>
+            
+            <div class="upload-section">
+                <div class="upload-card">
+                    <h3>Upload CSV or Excel File</h3>
+                    <p>Upload a file containing student data with columns: student_id, name, math, science, english, history, attendance, study_hours</p>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="dataFile" accept=".csv,.xlsx,.xls" />
+                        <button class="btn btn-primary" onclick="uploadFile()">Upload & Analyze</button>
+                    </div>
+                    
+                    <div id="uploadStatus"></div>
+                </div>
+                
+                <div class="upload-card">
+                    <h3>Use Sample Data</h3>
+                    <p>Load pre-generated sample data to explore the dashboard features</p>
+                    <button class="btn btn-secondary" onclick="loadSampleData()">Load Sample Data</button>
+                </div>
+            </div>
+
+            <div class="data-format-info">
+                <h3>Expected Data Format</h3>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Description</th>
+                            <th>Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>student_id</td><td>Unique student identifier</td><td>Yes</td></tr>
+                        <tr><td>name</td><td>Student name</td><td>Yes</td></tr>
+                        <tr><td>math</td><td>Math grade (0-100)</td><td>Yes</td></tr>
+                        <tr><td>science</td><td>Science grade (0-100)</td><td>Yes</td></tr>
+                        <tr><td>english</td><td>English grade (0-100)</td><td>Yes</td></tr>
+                        <tr><td>history</td><td>History grade (0-100)</td><td>Yes</td></tr>
+                        <tr><td>attendance</td><td>Attendance percentage</td><td>Optional</td></tr>
+                        <tr><td>study_hours</td><td>Weekly study hours</td><td>Optional</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Student Analytics App | Built with Flask, Pandas, and Machine Learning</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
