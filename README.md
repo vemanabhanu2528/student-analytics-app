@@ -245,7 +245,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👨‍💻 Author
 
-Your Name - [@yourusername](https://github.com/yourusername)
+Your Name - [vemanabhanu2528](https://github.com/vemanabhanu2528)
 
 ## 🙏 Acknowledgments
 
@@ -256,7 +256,7 @@ Your Name - [@yourusername](https://github.com/yourusername)
 
 ## 📧 Contact
 
-For questions or support, please open an issue on GitHub or contact: your.email@example.com
+For questions or support, please open an issue on GitHub or contact: vemanabhanu2528@gmail.com
 
 ---
 
